@@ -37,8 +37,10 @@ class Pointer():
     symbol = ''
     origin = None
     v = (1, 0)
+    wrap = (0, 0) # wrap behaviour
     value = 0
-    HEADINGS = {'ᛌ': (1, 0), 'ᛍ': (0, 1)}
+    HEADINGS = {'ᛌ': (1, 0), 'ᛍ': (0, 1), 'ᛊ': (1, 0), 'ᛋ': (0, 1)}
+    WRAPINGS = {'ᛌ': (0, 0), 'ᛍ': (0, 0), 'ᛊ': (0, 1), 'ᛋ': (1, 0)}
 
     def __init__(self, x, y, symbol):
         self.x = x
@@ -46,6 +48,7 @@ class Pointer():
         self.origin = (x, y)
         self.symbol = symbol
         self.v = self.HEADINGS[symbol]
+        self.wrap = self.WRAPINGS[symbol]
 
     def advance(self):
         """ Move pointer by v"""
@@ -145,12 +148,16 @@ class Grid():
         pos = pointer.advance()
         if pos[1] >= len(self.grid):
             pointer.y = 0
+            pointer.x += pointer.wrap[0]
         if pos[1] < 0:
             pointer.y = len(self.grid) - 1
+            pointer.x -= pointer.wrap[0]
         if pos[0] >= len(self.grid[pointer.y]):
             pointer.x = 0
+            pointer.y += pointer.wrap[1]
         if pos[0] < 0:
             pointer.x = len(self.grid[pointer.y]) - 1
+            pointer.y -= pointer.wrap[1]
 
     def peek(self):
         return self.stack[-1]
